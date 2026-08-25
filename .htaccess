@@ -1,0 +1,22 @@
+# ============================================================
+# Agtive — clean URLs / index.html canonicalization
+# ============================================================
+
+RewriteEngine On
+RewriteBase /
+
+# 1. Redirect "/index.html" (or "/index") -> "/" (avoids duplicate-content URLs)
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index(\.html)?[\s?] [NC]
+RewriteRule ^index(?:\.html)?$ / [R=301,L]
+
+# 2. Redirect "/page.html" -> "/page" (strip .html from every other page's URL)
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /(.+)\.html[\s?] [NC]
+RewriteRule ^(.+)\.html$ /$1 [R=301,L]
+
+# 3. Internally serve the matching .html file for the extensionless URL
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# 4. Serve index.html when a directory (e.g. "/") is requested
+DirectoryIndex index.html
